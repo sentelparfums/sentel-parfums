@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة التحكم — Sentel Parfums</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--noir:#0a0a0a;--gold:#c9a55c;--gold2:#e0c78a;--cream:#f5efe6;--rose:#8c5a5a;--gray:#8a8580;--white:#fff}
+body{font-family:'Tajawal',sans-serif;background:var(--cream);color:var(--noir);padding-bottom:100px}
+.hdr{background:var(--noir);color:var(--cream);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.hdr h1{font-size:16px;font-weight:700}
+.hdr .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;color:var(--noir);font-weight:700}
+.actions{display:flex;gap:8px}
+.btn{padding:9px 16px;border-radius:10px;border:none;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;transition:.2s}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--noir)}
+.btn-dark{background:rgba(201,165,92,.15);color:var(--gold);border:1px solid rgba(201,165,92,.3)}
+.btn:active{transform:scale(.95)}
+.btn:disabled{opacity:.5}
+
+/* Login */
+#login{max-width:420px;margin:60px auto;padding:26px;background:var(--white);border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,.08);text-align:center}
+#login h2{font-size:24px;margin-bottom:8px}
+#login p{color:var(--gray);font-size:14px;margin-bottom:20px;line-height:1.6}
+#login textarea{width:100%;height:90px;padding:12px;border:1.5px solid #ebe3d6;border-radius:12px;font-family:monospace;font-size:13px;margin-bottom:14px;background:var(--cream);resize:none}
+#login textarea:focus{outline:none;border-color:var(--gold)}
+#login a{color:var(--gold);font-size:13px;text-decoration:underline;display:block;margin-top:14px}
+
+/* Products */
+.container{padding:16px}
+.stat{background:var(--white);padding:16px;border-radius:14px;margin-bottom:14px;display:flex;justify-content:space-between;box-shadow:0 4px 14px rgba(0,0,0,.05)}
+.stat b{color:var(--rose);font-size:20px}
+.prod{background:var(--white);padding:14px;border-radius:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,.05)}
+.prod-color{width:50px;height:50px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
+.prod-info{flex:1;min-width:0}
+.prod-info h4{font-size:15px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-info .meta{font-size:12px;color:var(--gray)}
+.prod-info .price{color:var(--rose);font-weight:700;font-size:14px;margin-top:2px}
+.prod-btns{display:flex;flex-direction:column;gap:6px}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:none;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer}
+.icon-edit{background:#f0ebe0;color:var(--noir)}
+.icon-del{background:#fbeaea;color:#c94b4b}
+
+/* FAB */
+.fab{position:fixed;bottom:20px;left:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--noir);font-size:28px;border:none;box-shadow:0 10px 30px rgba(201,165,92,.5);cursor:pointer;z-index:20}
+.fab:active{transform:scale(.9)}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:100;align-items:flex-end}
+.modal.show{display:flex}
+.modal-content{background:var(--white);width:100%;max-height:90vh;overflow-y:auto;border-radius:24px 24px 0 0;padding:22px}
+.modal-content h3{font-size:20px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+.modal-content .close{background:none;border:none;font-size:24px;color:var(--gray);cursor:pointer}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;border:1.5px solid #ebe3d6;border-radius:10px;font-family:inherit;font-size:14px;background:var(--cream)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);background:var(--white)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-color{display:flex;gap:10px;align-items:center}
+.field-color input[type=color]{width:50px;height:44px;padding:2px;cursor:pointer}
+
+/* Toast */
+.toast{position:fixed;bottom:90px;left:50%;transform:translate(-50%,120%);background:var(--noir);color:var(--gold);padding:13px 22px;border-radius:30px;font-size:13px;font-weight:600;box-shadow:0 12px 40px rgba(0,0,0,.35);transition:.35s;z-index:200;white-space:nowrap}
+.toast.show{transform:translate(-50%,0)}
+
+/* Loading */
+.loading{text-align:center;padding:60px 20px;color:var(--gray)}
+.spinner{width:40px;height:40px;border:4px solid #e8dfce;border-top-color:var(--gold);border-radius:50%;margin:0 auto 16px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login">
+  <div style="width:60px;height:60px;margin:0 auto 16px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:var(--noir)">S</div>
+  <h2>لوحة التحكم</h2>
+  <p>أدخل GitHub Token للدخول<br>سيُحفظ على جهازك فقط</p>
+  <textarea id="tokenInput" placeholder="ghp_..." autocomplete="off"></textarea>
+  <button class="btn btn-gold" style="width:100%;padding:13px;font-size:15px" onclick="doLogin()">دخول 🔓</button>
+  <a href="https://github.com/settings/tokens/new?scopes=repo&description=Sentel+Admin" target="_blank">🔗 كيف أحصل على Token؟</a>
+</div>
+
+<!-- Admin -->
+<div id="admin" style="display:none">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="logo">S</div>
+      <h1>إدارة المنتجات</h1>
+    </div>
+    <div class="actions">
+      <button class="btn btn-dark" onclick="logout()">خروج</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="stat">
+      <span>📦 عدد المنتجات</span>
+      <b id="prodCount">0</b>
+    </div>
+    <div id="status"></div>
+    <div id="list"></div>
+  </div>
+
+  <button class="fab" onclick="addProduct()">+</button>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content" id="modalContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const REPO = 'sentelparfums/sentel-parfums';
+const FILE = 'index.html';
+const CATS = {women:'نسائي',men:'رجالي',unisex:'للجنسين',home:'معطرات المنزل',mist:'برومات'};
+
+let token = localStorage.getItem('gh_token') || '';
+let products = [];
+let htmlSha = '';
+let htmlContent = '';
+let editingId = null;
+
+// ===== Helpers =====
+const $ = s => document.querySelector(s);
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+function toBase64(s){return btoa(unescape(encodeURIComponent(s)));}
+function fromBase64(s){return decodeURIComponent(escape(atob(s.replace(/\s/g,''))));}
+function esc(s){return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+// ===== Login =====
+function doLogin(){
+  const t = $('#tokenInput').value.trim();
+  if(!t || t.length < 20){ toast('❌ Token غير صالح'); return; }
+  token = t;
+  localStorage.setItem('gh_token', t);
+  start();
+}
+function logout(){
+  if(!confirm('تسجيل الخروج؟')) return;
+  localStorage.removeItem('gh_token');
+  location.reload();
+}
+
+// ===== Load file from GitHub =====
+async function loadFile(){
+  $('#list').innerHTML = '<div class="loading"><div class="spinner"></div>جاري التحميل...</div>';
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}?t=${Date.now()}`, {
+    headers: {'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json'}
+  });
+  if(!r.ok){ throw new Error('فشل التحميل — تحقق من Token'); }
+  const data = await r.json();
+  htmlSha = data.sha;
+  htmlContent = fromBase64(data.content);
+
+  // Parse PRODUCTS array
+  const m = htmlContent.match(/const PRODUCTS = (\[[\s\S]*?\n\]);/);
+  if(!m) throw new Error('لم يتم العثور على قائمة المنتجات');
+  products = eval(m[1]);
+  render();
+}
+
+// ===== Render list =====
+function render(){
+  $('#prodCount').textContent = products.length;
+  $('#list').innerHTML = products.map(p => `
+    <div class="prod">
+      <div class="prod-color" style="background:linear-gradient(135deg,${p.color[0]},${p.color[1]});color:#fff">🍾</div>
+      <div class="prod-info">
+        <h4>${esc(p.name)}</h4>
+        <div class="meta">${CATS[p.cat]||p.cat} · ${p.size}</div>
+        <div class="price">${p.price} د.م</div>
+      </div>
+      <div class="prod-btns">
+        <button class="icon-btn icon-edit" onclick="editProduct(${p.id})">✏️</button>
+        <button class="icon-btn icon-del" onclick="deleteProduct(${p.id})">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== Modal =====
+function openModal(html){$('#modalContent').innerHTML = html; $('#modal').classList.add('show');}
+function closeModal(){$('#modal').classList.remove('show'); editingId = null;}
+$('#modal').addEventListener('click', e => { if(e.target.id === 'modal') closeModal(); });
+
+// ===== Add / Edit =====
+function addProduct(){
+  editingId = null;
+  const nextId = Math.max(0, ...products.map(p => p.id)) + 1;
+  showForm({id:nextId,name:'',cat:'women',size:'50ml',price:200,oldPrice:0,color:['#c9a55c','#8c5a5a'],desc:'',rating:5,badge:''});
+}
+function editProduct(id){
+  const p = products.find(x => x.id === id);
+  if(p) { editingId = id; showForm({...p}); }
+}
+function showForm(p){
+  openModal(`
+    <h3>${editingId ? 'تعديل منتج' : 'منتج جديد'} <button class="close" onclick="closeModal()">✕</button></h3>
+    <div class="field"><label>اسم المنتج</label><input id="f_name" value="${esc(p.name)}" placeholder="Rose Élégante"></div>
+    <div class="field-row">
+      <div class="field"><label>الفئة</label>
+        <select id="f_cat">
+          ${Object.entries(CATS).map(([k,v]) => `<option value="${k}" ${p.cat===k?'selected':''}>${v}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>الحجم</label><input id="f_size" value="${esc(p.size)}" placeholder="50ml"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>السعر (د.م)</label><input id="f_price" type="number" value="${p.price}"></div>
+      <div class="field"><label>السعر القديم (اختياري)</label><input id="f_oldPrice" type="number" value="${p.oldPrice||0}"></div>
+    </div>
+    <div class="field"><label>الوصف</label><textarea id="f_desc" rows="3" placeholder="وصف العطر...">${esc(p.desc)}</textarea></div>
+    <div class="field-row">
+      <div class="field"><label>التقييم (1-5)</label><input id="f_rating" type="number" min="1" max="5" value="${p.rating||5}"></div>
+      <div class="field"><label>شارة (اختياري)</label><input id="f_badge" value="${esc(p.badge)}" placeholder="الأكثر مبيعًا"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>اللون 1</label><div class="field-color"><input id="f_color1" type="color" value="${p.color[0]}"><input id="f_color1h" value="${p.color[0]}" readonly style="flex:1"></div></div>
+      <div class="field"><label>اللون 2</label><div class="field-color"><input id="f_color2" type="color" value="${p.color[1]}"><input id="f_color2h" value="${p.color[1]}" readonly style="flex:1"></div></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn btn-gold" style="flex:1;padding:14px" onclick="saveForm()">💾 حفظ المنتج</button>
+      <button class="btn btn-dark" style="padding:14px 20px" onclick="closeModal()">إلغاء</button>
+    </div>
+  `);
+  $('#f_color1').oninput = e => $('#f_color1h').value = e.target.value;
+  $('#f_color2').oninput = e => $('#f_color2h').value = e.target.value;
+}
+
+function saveForm(){
+  const p = {
+    id: editingId || Math.max(0, ...products.map(x=>x.id)) + 1,
+    name: $('#f_name').value.trim(),
+    cat: $('#f_cat').value,
+    size: $('#f_size').value.trim() || '50ml',
+    price: +$('#f_price').value || 0,
+    oldPrice: +$('#f_oldPrice').value || 0,
+    color: [$('#f_color1').value, $('#f_color2').value],
+    desc: $('#f_desc').value.trim(),
+    rating: Math.min(5, Math.max(1, +$('#f_rating').value || 5)),
+    badge: $('#f_badge').value.trim()
+  };
+  if(!p.name){ toast('❌ أدخل اسم المنتج'); return; }
+  if(!p.price){ toast('❌ أدخل السعر'); return; }
+
+  if(editingId){
+    const i = products.findIndex(x => x.id === editingId);
+    products[i] = p;
+  } else {
+    products.push(p);
+  }
+  closeModal();
+  render();
+  saveToGitHub();
+}
+
+function deleteProduct(id){
+  if(!confirm('حذف هذا المنتج؟')) return;
+  products = products.filter(p => p.id !== id);
+  render();
+  saveToGitHub();
+}
+
+// ===== Save to GitHub =====
+async function saveToGitHub(){
+  const status = $('#status');
+  status.innerHTML = '<div class="loading"><div class="spinner"></div>جاري الحفظ على GitHub...</div>';
+  try {
+    // Get latest SHA
+    const r1 = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}?t=${Date.now()}`, {
+      headers: {'Authorization': 'token ' + token}
+    });
+    if(!r1.ok) throw new Error('فشل الاتصال بـ GitHub');
+    const data = await r1.json();
+    htmlSha = data.sha;
+    htmlContent = fromBase64(data.content);
+
+    // Regenerate PRODUCTS array
+    const newProductsJS = 'const PRODUCTS = ' + JSON.stringify(products, null, 2) + ';';
+    const newHtml = htmlContent.replace(/const PRODUCTS = \[[\s\S]*?\n\];/, newProductsJS);
+
+    // PUT
+    const r2 = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
+      method: 'PUT',
+      headers: {'Authorization': 'token ' + token, 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        message: 'تحديث المنتجات من لوحة التحكم',
+        content: toBase64(newHtml),
+        sha: htmlSha
+      })
+    });
+    if(!r2.ok){ const err = await r2.json(); throw new Error(err.message || 'فشل الحفظ'); }
+    status.innerHTML = '<div style="background:#e8f5e9;color:#2e7d32;padding:14px;border-radius:12px;font-size:13px;font-weight:600;text-align:center">✅ تم الحفظ! سيظهر التحديث على المتجر خلال 1-2 دقيقة.</div>';
+    setTimeout(() => status.innerHTML = '', 6000);
+    toast('✅ تم الحفظ بنجاح');
+  } catch(e){
+    status.innerHTML = `<div style="background:#fbeaea;color:#c94b4b;padding:14px;border-radius:12px;font-size:13px;font-weight:600;text-align:center">❌ خطأ: ${esc(e.message)}</div>`;
+    toast('❌ فشل الحفظ');
+  }
+}
+
+// ===== Start =====
+async function start(){
+  $('#login').style.display = 'none';
+  $('#admin').style.display = 'block';
+  try {
+    await loadFile();
+  } catch(e){
+    $('#list').innerHTML = `<div style="background:#fbeaea;color:#c94b4b;padding:20px;border-radius:14px;text-align:center">
+      <b>❌ خطأ</b><br>${esc(e.message)}<br><br>
+      <button class="btn btn-dark" onclick="logout()">تسجيل خروج</button>
+    </div>`;
+  }
+}
+
+// Auto login if token exists
+if(token){
+  $('#tokenInput').value = token;
+  start();
+}
+</script>
+</body>
+</html>
